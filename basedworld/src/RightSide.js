@@ -221,7 +221,17 @@ define(['exports', './Tips.js'], function (exports, _Tips) {
                         'p',
                         null,
                         React.createElement('span', { dangerouslySetInnerHTML: { __html: post.htmlSnippet } })
-                      )
+                      ),
+                      function () {
+                        if (post.pagemap && post.pagemap.cse_thumbnail && post.pagemap.cse_thumbnail[0] && post.pagemap.cse_thumbnail[0].src) {
+                          return React.createElement(
+                            'div',
+                            null,
+                            React.createElement('hr', null),
+                            React.createElement('img', { src: post.pagemap.cse_thumbnail[0].src, style: { "maxWidth": "100%" } })
+                          );
+                        }
+                      }()
                     )
                   );
                 }),

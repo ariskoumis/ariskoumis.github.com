@@ -175,7 +175,7 @@ define(['module', './CategoryColors.js'], function (module, CategoryColors) {
 
           var netResult = new this.convnetjs.Vol(1, 1, this.classes);
 
-          var segments = 10;
+          var segments = 1;
 
           for (var x = topLeft.x; x < bottomRight.x; x += segments) {
             for (var y = topLeft.y; y < bottomRight.y; y += segments) {
@@ -199,7 +199,7 @@ define(['module', './CategoryColors.js'], function (module, CategoryColors) {
 
               if (type >= 0) {
                 ctx.fillStyle = this.rgb(CategoryColors.idToCategories[type].color);
-                ctx.fillRect(x, y, segments, segments);
+                ctx.fillRect(Math.floor(x), Math.floor(y), segments, segments);
               }
             }
           }
@@ -250,7 +250,7 @@ define(['module', './CategoryColors.js'], function (module, CategoryColors) {
               var curI = -1;
               var curWeight = -1;
 
-              for (var j = 0; j < a.w.length - 1; j++) {
+              for (var j = 0; j < a.w.length; j++) {
                 var weight = a.w[j];
                 if (weight > curWeight) {
                   curWeight = weight;

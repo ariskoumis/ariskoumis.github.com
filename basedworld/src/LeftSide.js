@@ -80,8 +80,37 @@ define(["exports"], function (exports) {
     }, {
       key: "getNasaImage",
       value: function getNasaImage() {
-        console.log(this);
-        console.log(this.state);
+
+        try {
+          if (this.state.twitter) {
+            for (var tweet of this.state.twitter) {
+              if (tweet.media) {
+                return tweet.media;
+              }
+            }
+          }
+        } catch (e) {}
+
+        try {
+          if (this.state.google.items) {
+            for (var post of this.state.google.items) {
+              if (post.pagemap && post.pagemap.cse_thumbnail && post.pagemap.cse_thumbnail[0] && post.pagemap.cse_thumbnail[0].src) {
+                return post.pagemap.cse_thumbnail[0].src;
+              }
+            }
+          }
+        } catch (e) {}
+
+        try {
+          if (this.google) {
+            for (var post of this.google) {
+              if (post.pagemap && post.pagemap.cse_thumbnail && post.pagemap.cse_thumbnail[0] && post.pagemap.cse_thumbnail[0].src) {
+                return post.pagemap.cse_thumbnail[0].src;
+              }
+            }
+          }
+        } catch (e) {}
+
         if (!this.state.coords) {
           return "";
         }
@@ -159,6 +188,15 @@ define(["exports"], function (exports) {
         }
       }
     }, {
+      key: "onCurrentLocation",
+      value: function onCurrentLocation() {
+        if (this.state.twitter == null && this.state.currentLocation) {
+          return true;
+        }
+
+        return false;
+      }
+    }, {
       key: "render",
       value: function render() {
         var _this3 = this;
@@ -166,142 +204,150 @@ define(["exports"], function (exports) {
         return React.createElement(
           "div",
           { className: "container-fluid" },
-          React.createElement("img", { src: "images/based.png", width: "50%", style: { maxWidth: "100px", marginTop: "20px", marginBottom: "20px" } }),
-          React.createElement(
-            "p",
-            null,
-            this.state.title
-          ),
-          React.createElement("img", { src: this.getNasaImage(), width: "100%" }),
-          React.createElement("hr", null),
-          React.createElement(
-            "h5",
-            null,
-            "Weather"
-          ),
           function () {
-            var weather = _this3.getWeather();
-            console.log(weather);
-            if (weather) {
+            if (!_this3.onCurrentLocation()) {
               return React.createElement(
                 "div",
                 null,
+                React.createElement("img", { src: "/images/based.png", width: "50%", style: { maxWidth: "100px", marginTop: "20px", marginBottom: "20px" } }),
                 React.createElement(
-                  "h6",
+                  "p",
                   null,
-                  weather.text
+                  _this3.state.title
                 ),
+                React.createElement("img", { src: _this3.getNasaImage(), width: "100%" }),
+                React.createElement("hr", null),
                 React.createElement(
-                  "strong",
+                  "h5",
                   null,
-                  "Wind Direction:"
+                  "Weather"
                 ),
-                " ",
-                weather.wind,
-                React.createElement("br", null),
+                function () {
+                  var weather = _this3.getWeather();
+                  console.log(weather);
+                  if (weather) {
+                    return React.createElement(
+                      "div",
+                      null,
+                      React.createElement(
+                        "h6",
+                        null,
+                        weather.text
+                      ),
+                      React.createElement(
+                        "strong",
+                        null,
+                        "Wind Direction:"
+                      ),
+                      " ",
+                      weather.wind,
+                      React.createElement("br", null),
+                      React.createElement(
+                        "strong",
+                        null,
+                        "Temperature:"
+                      ),
+                      " ",
+                      weather.temp
+                    );
+                  } else {
+                    return React.createElement(
+                      "p",
+                      null,
+                      "N/A"
+                    );
+                  }
+                }(),
+                React.createElement("hr", null),
                 React.createElement(
-                  "strong",
+                  "h5",
                   null,
-                  "Temperature:"
-                ),
-                " ",
-                weather.temp
-              );
-            } else {
-              return React.createElement(
-                "p",
-                null,
-                "N/A"
-              );
-            }
-          }(),
-          React.createElement("hr", null),
-          React.createElement(
-            "h5",
-            null,
-            "Mood ",
-            React.createElement(
-              "small",
-              null,
-              "(Powered by Watson)"
-            )
-          ),
-          function () {
-            var watson = _this3.getWatson();
-            if (watson) {
-              return React.createElement(
-                "div",
-                null,
-                React.createElement(
-                  "div",
-                  { className: "progress" },
+                  "Mood ",
                   React.createElement(
-                    "div",
-                    { className: "progress-bar progress-bar-danger", role: "progressbar", "aria-valuenow": Math.floor(watson.anger * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.anger * 100 + "%" } },
-                    "Anger ",
-                    Math.floor(watson.anger * 100),
-                    "%"
+                    "small",
+                    null,
+                    "(Powered by Watson)"
                   )
                 ),
+                function () {
+                  var watson = _this3.getWatson();
+                  if (watson) {
+                    return React.createElement(
+                      "div",
+                      null,
+                      React.createElement(
+                        "div",
+                        { className: "progress" },
+                        React.createElement(
+                          "div",
+                          { className: "progress-bar progress-bar-danger", role: "progressbar", "aria-valuenow": Math.floor(watson.anger * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.anger * 100 + "%" } },
+                          "Anger ",
+                          Math.floor(watson.anger * 100),
+                          "%"
+                        )
+                      ),
+                      React.createElement(
+                        "div",
+                        { className: "progress" },
+                        React.createElement(
+                          "div",
+                          { className: "progress-bar progress-bar-info", role: "progressbar", "aria-valuenow": Math.floor(watson.disgust * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.disgust * 100 + "%" } },
+                          "Disgust ",
+                          Math.floor(watson.disgust * 100),
+                          "%"
+                        )
+                      ),
+                      React.createElement(
+                        "div",
+                        { className: "progress" },
+                        React.createElement(
+                          "div",
+                          { className: "progress-bar progress-bar-warning", role: "progressbar", "aria-valuenow": Math.floor(watson.fear * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.fear * 100 + "%" } },
+                          "Fear ",
+                          Math.floor(watson.fear * 100),
+                          "%"
+                        )
+                      ),
+                      React.createElement(
+                        "div",
+                        { className: "progress" },
+                        React.createElement(
+                          "div",
+                          { className: "progress-bar progress-bar-success", role: "progressbar", "aria-valuenow": Math.floor(watson.joy * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.joy * 100 + "%" } },
+                          "Joy ",
+                          Math.floor(watson.joy * 100),
+                          "%"
+                        )
+                      ),
+                      React.createElement(
+                        "div",
+                        { className: "progress" },
+                        React.createElement(
+                          "div",
+                          { className: "progress-bar", role: "progressbar", "aria-valuenow": Math.floor(watson.sadness * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.sadness * 100 + "%" } },
+                          "Sadness ",
+                          Math.floor(watson.sadness * 100),
+                          "%"
+                        )
+                      )
+                    );
+                  } else {
+                    return React.createElement(
+                      "p",
+                      null,
+                      "N/A"
+                    );
+                  }
+                }(),
+                React.createElement("hr", null),
                 React.createElement(
-                  "div",
-                  { className: "progress" },
-                  React.createElement(
-                    "div",
-                    { className: "progress-bar progress-bar-info", role: "progressbar", "aria-valuenow": Math.floor(watson.disgust * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.disgust * 100 + "%" } },
-                    "Disgust ",
-                    Math.floor(watson.disgust * 100),
-                    "%"
-                  )
-                ),
-                React.createElement(
-                  "div",
-                  { className: "progress" },
-                  React.createElement(
-                    "div",
-                    { className: "progress-bar progress-bar-warning", role: "progressbar", "aria-valuenow": Math.floor(watson.fear * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.fear * 100 + "%" } },
-                    "Fear ",
-                    Math.floor(watson.fear * 100),
-                    "%"
-                  )
-                ),
-                React.createElement(
-                  "div",
-                  { className: "progress" },
-                  React.createElement(
-                    "div",
-                    { className: "progress-bar progress-bar-success", role: "progressbar", "aria-valuenow": Math.floor(watson.joy * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.joy * 100 + "%" } },
-                    "Joy ",
-                    Math.floor(watson.joy * 100),
-                    "%"
-                  )
-                ),
-                React.createElement(
-                  "div",
-                  { className: "progress" },
-                  React.createElement(
-                    "div",
-                    { className: "progress-bar", role: "progressbar", "aria-valuenow": Math.floor(watson.sadness * 100), "aria-valuemin": "0", "aria-valuemax": "100", style: { minWidth: "2em", width: watson.sadness * 100 + "%" } },
-                    "Sadness ",
-                    Math.floor(watson.sadness * 100),
-                    "%"
-                  )
+                  "p",
+                  null,
+                  "Made by Aris Koumis and Henry Tran."
                 )
               );
-            } else {
-              return React.createElement(
-                "p",
-                null,
-                "N/A"
-              );
             }
-          }(),
-          React.createElement("hr", null),
-          React.createElement(
-            "p",
-            null,
-            "Made by Aris Koumis and Henry Tran."
-          )
+          }()
         );
       }
     }]);
